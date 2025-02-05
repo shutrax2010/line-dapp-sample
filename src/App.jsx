@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useMediaQuery } from 'react-responsive';
 import liff from "@line/liff";
 
 
@@ -25,6 +26,8 @@ const App = () => {
   const [gameOver, setGameOver] = useState(false); // ゲーム終了フラグ
   const [shuffledCards, setShuffledCards] = useState([]); // シャッフルされたカードの状態
   const [name, setName] = useState("");
+
+  const isDesktop = useMediaQuery({ query: '(min-width: 768px)' });
 
   // カードのシャッフル処理
   const shuffleCards = () => {
@@ -100,10 +103,9 @@ const App = () => {
 
   return (
     <div style={styles.container}>
-      <h1>神経衰弱ゲーム</h1>
-      <label>Player: {name}</label>
-      <p>スコア: {score}</p>
-      <p>ターン数: {turns}</p>
+      <h1 style={styles.headText}>神経衰弱ゲーム</h1>
+      <label style={styles.descText}>Player: {name}</label>
+      <p style={styles.descText}>スコア: {score} - ターン数: {turns}</p>
       {gameOver && (
         <div>
           {score > 100 ? (
@@ -120,7 +122,7 @@ const App = () => {
         </button>
       ) : null}
 
-      <div style={styles.board}>
+      <div style={ isDesktop ? styles.board : styles.boardSp}>
         {shuffledCards.map((card, index) => {
           const isFlipped = flippedCards.includes(index) || matchedCards.includes(card.value);
           return (
@@ -154,9 +156,26 @@ const styles = {
     textAlign: 'center',
     marginTop: '20px',
   },
+  headText: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'blue',
+    margin: 0,
+  },
+  descText: {
+    fontSize: '16px',
+    fontWeight: 'bold',
+  },
   board: {
     display: 'grid',
     gridTemplateColumns: 'repeat(5, 100px)',
+    gridGap: '10px',
+    justifyContent: 'center',
+    marginTop: '20px',
+  },
+  boardSp: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 100px)',
     gridGap: '10px',
     justifyContent: 'center',
     marginTop: '20px',
