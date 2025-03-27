@@ -120,6 +120,7 @@ const App = () => {
     if (matchedCards.length === cards.length) {
       setGameOver(true);
       handleMint('10');
+      handleGetBalance();
     }
   }, [matchedCards]);
 
@@ -135,12 +136,12 @@ const App = () => {
           {score > 100 ? (
             <div>
               <p style={styles.specialMessage}>すごい！100点以上達成！おめでとう！</p>
-              <p>10 YTTトークンを取得しました！</p>
+              <p style={styles.getTokenMessage}>10 YTTトークンを取得しました！</p>
             </div>
           ) : (
             <div>
               <p>ゲームクリア！お疲れ様でした！</p>
-              <p>10 YTTトークンを取得しました！</p>
+              <p style={styles.getTokenMessage}>10 YTTトークンを取得しました！</p>
             </div>
           )}
         </div>
@@ -247,6 +248,11 @@ const styles = {
     color: '#FFD700', // 金色
     fontWeight: 'bold',
     marginTop: '20px',
+  },
+  getTokenMessage: {
+    fontSize: '20px',
+    color: '#0000ff',
+    fontWeight: 'bold',
   },
 };
 
