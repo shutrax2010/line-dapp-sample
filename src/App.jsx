@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import liff from "@line/liff";
+import { getContractDetail, getBalance,getKaiaPrice, mintTokens } from './services/apiService';
 
 
 // ゲームで使用するカードデータ
@@ -26,8 +27,26 @@ const App = () => {
   const [gameOver, setGameOver] = useState(false); // ゲーム終了フラグ
   const [shuffledCards, setShuffledCards] = useState([]); // シャッフルされたカードの状態
   const [name, setName] = useState("");
+  const [balance, setBalance] = useState('0');
+  const [mintAmount, setMintAmount] = useState('');
+  const [mintTransaction, setMintTransaction] = useState('');
 
+
+  const address = import.meta.env.VITE_KAIA_ADDRESS;
+  const exurl = 'https://kairos.kaiascan.io/address/' + address;
   const isDesktop = useMediaQuery({ query: '(min-width: 768px)' });
+
+  // YTTの残高を取得
+  const handleGetBalance = async () => {
+    const balanceData = await getBalance(address);
+    setBalance(balanceData.balance);
+  };
+
+  // YTTトークンを発行
+  const handleMint = async (mintAmount) => {
+    const mintResult = await mintTokens(address, mintAmount);
+    setMintTransaction(mintResult.transactionHash);
+  };
 
   // カードのシャッフル処理
   const shuffleCards = () => {
@@ -42,7 +61,7 @@ const App = () => {
     setMatchedCards([]);
     setFlippedCards([]);
     setGameOver(false);
-    setGameStarted(true);
+    setGameStarted(true);  
     shuffleCards(); // ゲーム開始時にのみシャッフル
   };
 
@@ -96,8 +115,11 @@ const App = () => {
         })
     })
 
+    handleGetBalance();
+
     if (matchedCards.length === cards.length) {
       setGameOver(true);
+      handleMint('10');
     }
   }, [matchedCards]);
 
@@ -105,13 +127,21 @@ const App = () => {
     <div style={styles.container}>
       <h1 style={styles.headText}>神経衰弱ゲーム</h1>
       <label style={styles.descText}>Player: {name}</label>
+
+      <div style={styles.descText}><a href={exurl}>YTTトークン: {balance}</a></div>
       <p style={styles.descText}>スコア: {score} - ターン数: {turns}</p>
       {gameOver && (
         <div>
           {score > 100 ? (
-            <p style={styles.specialMessage}>すごい！100点以上達成！おめでとう！</p>
+            <div>
+              <p style={styles.specialMessage}>すごい！100点以上達成！おめでとう！</p>
+              <p>10 YTTトークンを取得しました！</p>
+            </div>
           ) : (
-            <p>ゲームクリア！お疲れ様でした！</p>
+            <div>
+              <p>ゲームクリア！お疲れ様でした！</p>
+              <p>10 YTTトークンを取得しました！</p>
+            </div>
           )}
         </div>
       )}
